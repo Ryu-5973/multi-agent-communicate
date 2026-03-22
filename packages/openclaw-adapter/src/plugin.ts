@@ -4,6 +4,7 @@ import { BusClient } from "./bus-client.js";
 import { OpenClawInboundHandler } from "./inbound-handler.js";
 import { OpenClawIdentityMapper } from "./mapper.js";
 import { OpenClawOutboundHandler } from "./outbound-handler.js";
+import type { OpenClawRuntimeBridge, RuntimeMountOptions } from "./runtime-bridge.js";
 import type {
   BusClientConfig,
   BusWebSocketConfig,
@@ -19,6 +20,9 @@ export class OpenClawAdapterPlugin {
   private readonly outboundHandler: OpenClawOutboundHandler;
   private readonly inboundHandler: OpenClawInboundHandler;
   private readonly busWebSocketClient: BusWebSocketClient | null;
+  private detachRuntimeListener: (() => void) | null = null;
+  private detachRealtimeListener: (() => void) | null = null;
+  private mountedRuntime: OpenClawRuntimeBridge | null = null;
 
   constructor(config: BusClientConfig, websocketConfig?: BusWebSocketConfig) {
     this.busClient = new BusClient(config);
@@ -47,6 +51,22 @@ export class OpenClawAdapterPlugin {
   async handleOutbound(action: OpenClawOutboundAction): Promise<Message> {
     const message = this.outboundHandler.toMessage(action);
     return this.busClient.publishMessage(message);
+  }
+
+  async syncInbox(botId: string): Promise<OpenClawInboundEvent[]> {
+    const agentId = this.mapper.toAgentId(botId);
+    const messages = await this.busClient.listInboxMessages(agentId);
+    return messages.map((message) => this.handleInbound(message));
+  }
+
+  async syncRoom(roomId: string): Promise<OpenClawInboundEvent[]> {
+    const messages = await this.busClient.listRoomMessages(roomId);
+    return messages.map((message) => this.handleInbound(message));
+  }
+
+  async syncTaskMessages(taskId: string): Promise<OpenClawInboundEvent[]> {
+    const messages = await this.busClient.listTaskMessages(taskId);
+    return messages.map((message) => this.handleInbound(message));
   }
 
   handleInbound(message: Message): OpenClawInboundEvent {
@@ -89,5 +109,63 @@ export class OpenClawAdapterPlugin {
 
   disconnectRealtime(code?: number): void {
     this.busWebSocketClient?.disconnect(code);
+  }
+
+  async mountRuntime(
+    runtime: OpenClawRuntimeBridge,
+    options: RuntimeMountOptions = {},
+  ): Promise<void> {
+    this.mountedRuntime = runtime;
+    const bots = await runtime.listBots();
+
+    for (const bot of bots) {
+      await this.registerBot(bot);
+    }
+
+    await this.connectRealtime();
+
+    for (const bot of bots) {
+      await this.subscribeInbox(bot.botId);
+    }
+
+    for (const roomId of options.subscribeRooms ?? []) {
+      await this.subscribeRoom(roomId);
+    }
+
+    this.detachRealtimeListener?.();
+    this.detachRealtimeListener = this.onRealtimeEvent(async (event) => {
+      await runtime.deliverInboundEvent(event);
+    });
+
+    this.detachRuntimeListener?.();
+    this.detachRuntimeListener = runtime.onOutboundAction(async (action) => {
+      await this.handleOutbound(action);
+    });
+
+    if (options.syncInboxOnMount) {
+      for (const bot of bots) {
+        const events = await this.syncInbox(bot.botId);
+
+        if (!options.replaySyncedEvents) {
+          continue;
+        }
+
+        for (const event of events) {
+          await runtime.deliverInboundEvent(event);
+        }
+      }
+    }
+
+    await runtime.onMounted?.();
+  }
+
+  async unmountRuntime(): Promise<void> {
+    this.detachRuntimeListener?.();
+    this.detachRuntimeListener = null;
+    this.detachRealtimeListener?.();
+    this.detachRealtimeListener = null;
+    this.disconnectRealtime();
+    await this.mountedRuntime?.onUnmounted?.();
+    this.mountedRuntime = null;
   }
 }

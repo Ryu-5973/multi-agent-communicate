@@ -38,6 +38,7 @@ Current OpenClaw adapter package includes:
 - bot-to-agent identity mapping
 - inbound and outbound protocol translators
 - a plugin shell that can be wired to real OpenClaw runtime hooks
+- history sync helpers for inbox, room, and task catch-up
 
 ## Run
 
@@ -70,6 +71,12 @@ Run the end-to-end demo:
 
 ```bash
 npm run demo:e2e
+```
+
+Run the mock runtime bridge demo:
+
+```bash
+npm run demo:runtime
 ```
 
 ## Docs

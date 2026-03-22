@@ -29,6 +29,7 @@ Core files:
 - `src/mapper.ts`
 - `src/bus-client.ts`
 - `src/ws-client.ts`
+- `src/runtime-bridge.ts`
 - `src/outbound-handler.ts`
 - `src/inbound-handler.ts`
 - `src/plugin.ts`
@@ -78,6 +79,33 @@ When configured with a websocket endpoint, the plugin can:
 
 This is the intended live delivery path for bus messages.
 
+## Runtime bridge
+
+The adapter now exposes an `OpenClawRuntimeBridge` contract. A bridge implementation provides:
+- `listBots`
+- `onOutboundAction`
+- `deliverInboundEvent`
+- optional `onMounted`
+- optional `onUnmounted`
+
+This keeps the adapter independent from the exact OpenClaw plugin API shape while still supporting a real event-driven mount path.
+
+The plugin can attach through:
+- `OpenClawAdapterPlugin.mountRuntime`
+- `OpenClawAdapterPlugin.unmountRuntime`
+
+For startup catch-up and reconnect flows, the plugin now also exposes:
+- `OpenClawAdapterPlugin.syncInbox`
+- `OpenClawAdapterPlugin.syncRoom`
+- `OpenClawAdapterPlugin.syncTaskMessages`
+
+These methods fetch persisted history from the bus and convert it into OpenClaw inbound events.
+
+`mountRuntime` also supports lifecycle-oriented options:
+- `subscribeRooms`
+- `syncInboxOnMount`
+- `replaySyncedEvents`
+
 ## Demo
 
 There is a minimal roundtrip demo at:
@@ -90,6 +118,18 @@ Run it with:
 
 ```bash
 npm run demo:e2e
+```
+
+There is also a mock runtime bridge demo at:
+
+```text
+examples/e2e/mock-openclaw-runtime.mjs
+```
+
+Run it with:
+
+```bash
+npm run demo:runtime
 ```
 
 ## Recommended next step
