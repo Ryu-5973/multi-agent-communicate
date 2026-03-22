@@ -6,6 +6,7 @@ type MessageState = {
   messages: Map<string, Message>;
   roomMessages: Map<string, string[]>;
   directMessages: Map<string, string[]>;
+  taskMessages: Map<string, string[]>;
 };
 
 export class MessageService {
@@ -26,6 +27,12 @@ export class MessageService {
       this.state.directMessages.set(message.target.to, directMessageIds);
     }
 
+    if (message.taskId) {
+      const taskMessageIds = this.state.taskMessages.get(message.taskId) ?? [];
+      taskMessageIds.push(message.id);
+      this.state.taskMessages.set(message.taskId, taskMessageIds);
+    }
+
     this.emit(message);
     return message;
   }
@@ -34,22 +41,19 @@ export class MessageService {
     return [...this.state.messages.values()];
   }
 
-  listRoomMessages(roomId: string): Message[] {
-    const ids = this.state.roomMessages.get(roomId) ?? [];
-    return ids
-      .map((id) => this.state.messages.get(id))
-      .filter((message): message is Message => Boolean(message));
-  }
-
-  listDirectMessages(agentId: string): Message[] {
+  listDirectMessages(agentId: string, limit?: number): Message[] {
     const ids = this.state.directMessages.get(agentId) ?? [];
-    return ids
-      .map((id) => this.state.messages.get(id))
-      .filter((message): message is Message => Boolean(message));
+    return this.resolveByIds(ids, limit);
   }
 
-  listTaskMessages(taskId: string): Message[] {
-    return [...this.state.messages.values()].filter((message) => message.taskId === taskId);
+  listTaskMessages(taskId: string, limit?: number): Message[] {
+    const ids = this.state.taskMessages.get(taskId) ?? [];
+    return this.resolveByIds(ids, limit);
+  }
+
+  listRoomMessages(roomId: string, limit?: number): Message[] {
+    const ids = this.state.roomMessages.get(roomId) ?? [];
+    return this.resolveByIds(ids, limit);
   }
 
   onPublish(listener: PublishListener): () => void {
@@ -64,5 +68,14 @@ export class MessageService {
     for (const listener of this.listeners) {
       listener(message);
     }
+  }
+
+  private resolveByIds(ids: string[], limit?: number): Message[] {
+    const selectedIds =
+      typeof limit === "number" && limit > 0 ? ids.slice(-limit) : ids;
+
+    return selectedIds
+      .map((id) => this.state.messages.get(id))
+      .filter((message): message is Message => Boolean(message));
   }
 }

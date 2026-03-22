@@ -80,9 +80,17 @@ Run the mock runtime bridge demo:
 npm run demo:runtime
 ```
 
+Run the local benchmark suite:
+
+```bash
+npm run bench:local
+```
+
 ## Docs
 
 - [Architecture proposal](./docs/architecture.md)
 - [MVP roadmap](./docs/roadmap.md)
 - [API usage](./docs/api.md)
 - [OpenClaw adapter](./docs/openclaw-adapter.md)
+- [OpenClaw integration manual](./docs/openclaw-integration-manual.md)
+- [Skill packaging guide](./docs/skill-packaging.md)

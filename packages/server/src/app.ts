@@ -31,6 +31,7 @@ export async function buildServer() {
     messages: state.messages,
     roomMessages: state.roomMessages,
     directMessages: state.directMessages,
+    taskMessages: state.taskMessages,
   });
   const webSocketGateway = new WebSocketGateway();
 

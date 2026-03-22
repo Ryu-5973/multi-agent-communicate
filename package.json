@@ -12,6 +12,7 @@
     "check": "npm run check --workspaces",
     "dev:server": "npm run dev --workspace @multi-agent-communicate/server",
     "demo:e2e": "npm run build --workspaces && node examples/e2e/openclaw-roundtrip.mjs",
-    "demo:runtime": "npm run build --workspaces && node examples/e2e/mock-openclaw-runtime.mjs"
+    "demo:runtime": "npm run build --workspaces && node examples/e2e/mock-openclaw-runtime.mjs",
+    "bench:local": "npm run build --workspaces && node scripts/bench/run-local-bench.mjs"
   }
 }

@@ -7,6 +7,7 @@ export function createMemoryState(): InMemoryState {
     messages: new Map(),
     roomMessages: new Map(),
     directMessages: new Map(),
+    taskMessages: new Map(),
     tasks: new Map(),
   };
 }

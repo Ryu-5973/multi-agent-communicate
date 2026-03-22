@@ -11,5 +11,6 @@ export type InMemoryState = {
   messages: Map<string, Message>;
   roomMessages: Map<string, string[]>;
   directMessages: Map<string, string[]>;
+  taskMessages: Map<string, string[]>;
   tasks: Map<string, Task>;
 };
