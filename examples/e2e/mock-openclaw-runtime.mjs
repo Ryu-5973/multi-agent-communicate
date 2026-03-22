@@ -1,6 +1,9 @@
 import { setTimeout as delay } from "node:timers/promises";
 
-import { OpenClawAdapterPlugin } from "../../packages/openclaw-adapter/dist/index.js";
+import {
+  OpenClawAdapterHost,
+  OpenClawAdapterPlugin,
+} from "../../packages/openclaw-adapter/dist/index.js";
 import { buildServer } from "../../packages/server/dist/app.js";
 
 class MockOpenClawRuntime {
@@ -65,16 +68,17 @@ const adapter = new OpenClawAdapterPlugin(
   { baseUrl: httpBaseUrl },
   { url: websocketUrl },
 );
+const hostBridge = new OpenClawAdapterHost(adapter, {
+  rooms: ["runtime-room"],
+  syncInboxOnMount: true,
+  replaySyncedEvents: true,
+});
 
 const server = await buildServer();
 
 try {
   await server.listen({ host, port });
-  await adapter.mountRuntime(runtime, {
-    subscribeRooms: ["runtime-room"],
-    syncInboxOnMount: true,
-    replaySyncedEvents: true,
-  });
+  await hostBridge.start(runtime);
 
   await fetch(`${httpBaseUrl}/rooms`, {
     method: "POST",
@@ -149,6 +153,6 @@ try {
     ),
   );
 } finally {
-  await adapter.unmountRuntime();
+  await hostBridge.stop();
   await server.close();
 }

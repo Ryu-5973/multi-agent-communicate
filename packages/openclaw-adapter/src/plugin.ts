@@ -93,6 +93,22 @@ export class OpenClawAdapterPlugin {
     await this.busWebSocketClient.subscribeInbox(this.mapper.toAgentId(botId));
   }
 
+  async unsubscribeRoom(roomId: string): Promise<void> {
+    if (!this.busWebSocketClient) {
+      throw new Error("Realtime client is not configured");
+    }
+
+    await this.busWebSocketClient.unsubscribeRoom(roomId);
+  }
+
+  async unsubscribeInbox(botId: string): Promise<void> {
+    if (!this.busWebSocketClient) {
+      throw new Error("Realtime client is not configured");
+    }
+
+    await this.busWebSocketClient.unsubscribeInbox(this.mapper.toAgentId(botId));
+  }
+
   onRealtimeEvent(listener: (event: OpenClawInboundEvent) => void): () => void {
     if (!this.busWebSocketClient) {
       throw new Error("Realtime client is not configured");

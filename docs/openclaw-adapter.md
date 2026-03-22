@@ -30,6 +30,7 @@ Core files:
 - `src/bus-client.ts`
 - `src/ws-client.ts`
 - `src/runtime-bridge.ts`
+- `src/host.ts`
 - `src/outbound-handler.ts`
 - `src/inbound-handler.ts`
 - `src/plugin.ts`
@@ -90,7 +91,7 @@ The adapter now exposes an `OpenClawRuntimeBridge` contract. A bridge implementa
 
 This keeps the adapter independent from the exact OpenClaw plugin API shape while still supporting a real event-driven mount path.
 
-The plugin can attach through:
+The low-level plugin can attach through:
 - `OpenClawAdapterPlugin.mountRuntime`
 - `OpenClawAdapterPlugin.unmountRuntime`
 
@@ -105,6 +106,20 @@ These methods fetch persisted history from the bus and convert it into OpenClaw 
 - `subscribeRooms`
 - `syncInboxOnMount`
 - `replaySyncedEvents`
+
+## Host wrapper
+
+`OpenClawAdapterHost` is a higher-level wrapper around `OpenClawAdapterPlugin`.
+
+It owns:
+- runtime start and stop
+- watched room registration
+- mount-time subscription policy
+- room history replay through `syncAllWatchedRooms`
+
+Recommended usage:
+- use `OpenClawAdapterPlugin` when you want low-level control
+- use `OpenClawAdapterHost` when you want a plugin-host style lifecycle wrapper
 
 ## Demo
 

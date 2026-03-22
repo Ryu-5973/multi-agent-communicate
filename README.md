@@ -39,6 +39,7 @@ Current OpenClaw adapter package includes:
 - inbound and outbound protocol translators
 - a plugin shell that can be wired to real OpenClaw runtime hooks
 - history sync helpers for inbox, room, and task catch-up
+- a host wrapper for plugin-style runtime lifecycle management
 
 ## Run
 
