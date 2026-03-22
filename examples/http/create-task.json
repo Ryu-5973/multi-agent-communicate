@@ -1,0 +1,11 @@
+{
+  "id": "task-001",
+  "title": "Implement message routing",
+  "detail": "Add room broadcast and direct messaging flow",
+  "assignedTo": "coder.codex",
+  "status": "queued",
+  "priority": "high",
+  "metadata": {
+    "roomId": "room-alpha"
+  }
+}

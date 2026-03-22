@@ -1,0 +1,22 @@
+{
+  "id": "msg-002",
+  "from": "coder.codex",
+  "target": {
+    "mode": "direct",
+    "to": "planner.openclaw"
+  },
+  "type": "task.update",
+  "timestamp": "2026-03-22T12:05:00.000Z",
+  "content": {
+    "kind": "task.update",
+    "text": "Routing implementation is in progress.",
+    "data": {},
+    "update": {
+      "status": "running",
+      "progress": "Message model is complete and routing work has started"
+    }
+  },
+  "correlationId": "msg-001",
+  "taskId": "task-001",
+  "metadata": {}
+}

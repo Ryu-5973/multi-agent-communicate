@@ -1,0 +1,16 @@
+{
+  "name": "multi-agent-communicate",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A communication bus for multi-agent collaboration across runtimes.",
+  "workspaces": [
+    "packages/*"
+  ],
+  "packageManager": "pnpm@10.6.3",
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "check": "npm run check --workspaces",
+    "dev:server": "npm run dev --workspace @multi-agent-communicate/server",
+    "demo:e2e": "npm run build --workspaces && node examples/e2e/openclaw-roundtrip.mjs"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "planner.openclaw",
+  "runtime": "openclaw",
+  "name": "planner-bot",
+  "capabilities": ["planner"],
+  "status": "online",
+  "metadata": {
+    "role": "planner"
+  }
+}

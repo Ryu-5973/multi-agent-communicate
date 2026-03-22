@@ -1,0 +1,10 @@
+{
+  "id": "coder.codex",
+  "runtime": "codex-cli",
+  "name": "coder-agent",
+  "capabilities": ["code", "review"],
+  "status": "online",
+  "metadata": {
+    "role": "implementation"
+  }
+}

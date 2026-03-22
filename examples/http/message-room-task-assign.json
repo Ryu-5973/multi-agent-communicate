@@ -1,0 +1,27 @@
+{
+  "id": "msg-001",
+  "from": "planner.openclaw",
+  "target": {
+    "mode": "room",
+    "roomId": "room-alpha"
+  },
+  "type": "task.assign",
+  "timestamp": "2026-03-22T12:01:00.000Z",
+  "content": {
+    "kind": "task.assign",
+    "text": "Please implement the message routing layer.",
+    "data": {
+      "priority": "high"
+    },
+    "task": {
+      "id": "task-001",
+      "title": "Implement message routing",
+      "detail": "Add room broadcast and direct messaging flow",
+      "assignedTo": "coder.codex",
+      "priority": "high"
+    }
+  },
+  "correlationId": null,
+  "taskId": "task-001",
+  "metadata": {}
+}
